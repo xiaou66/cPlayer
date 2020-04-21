@@ -129,7 +129,7 @@ export default class cplayer extends EventEmitter {
     a('canplaythrough', e.handleCanPlayThrough);
     a('pause', e.handlePause);
     a('play', e.handlePlay);
-    a('playing', e.handlePlaying)
+    a('playing', e.handlePlaying);
     a('ended', e.handleEnded);
     a('loadeddata', e.handleLoadeddata);
   }
@@ -141,16 +141,14 @@ export default class cplayer extends EventEmitter {
     r('canplaythrough', e.handleCanPlayThrough);
     r('pause', e.handlePause);
     r('play', e.handlePlay);
-    r('playing', e.handlePlaying)
+    r('playing', e.handlePlaying);
     r('ended', e.handleEnded);
     r('loadeddata', e.handleLoadeddata);
   }
 
   private eventHandlers: { [key: string]: (...args: any[]) => void } = {
-    handlePlay: (...args) => {
-      if (this.__paused) {
-        this.pause();
-      }
+    handlerPlayErr: (... args) => {
+      this.emit('playerr', ...args)
     },
     handlePlaying: (...args) => {
       if (this.audioElement.currentTime === 0) {
@@ -229,9 +227,9 @@ export default class cplayer extends EventEmitter {
           this.initializeEventEmitter(this.audioElement);
           this.emit('audioelementchange', this.audioElement);
         }
-      } else { 
+      } else {
         if (!(this.audioElementType === 'HTMLAudioElement')) {
-          if(typeof this.audioElement !== 'undefined') { 
+          if(typeof this.audioElement !== 'undefined') {
             this.removeEventEmitter(this.audioElement);
             this.audioElement.src = '';
           }
@@ -244,8 +242,9 @@ export default class cplayer extends EventEmitter {
         }
       }
       this.setVolume(this.volume);
-      this.audioElement.src = this.nowplay.src;
+      // 播放时的播放地址
       this.emit('openaudio', audio);
+      this.audioElement.src = /\.[^ .]{0,4}$/.test(this.nowplay.src) ? this.nowplay.src : this.nowplay.src + '&t='+new Date().getTime()
       if (!this.__paused) {
         this.play();
       }
@@ -281,6 +280,10 @@ export default class cplayer extends EventEmitter {
     let res;
     if (!isPlaying && this.playlist.length > 0 || Forced) {
       res = this.audioElement.play();
+      res.catch(res => {
+        // 当播放出现异常时
+        this.emit('playerr', this.nowplay);
+      })
     }
     if (this.__paused) {
       this.__paused = false;
@@ -353,7 +356,7 @@ export default class cplayer extends EventEmitter {
     if (this.audioElement) {
       this.audioElement.src = null;
       this.audioElement.removeEventListener("timeupdate", this.eventHandlers.handleTimeUpdate);
-      this.removeAllListeners();  
+      this.removeAllListeners();
     }
     if (this.view) this.view.destroy();
     Object.getOwnPropertyNames(this).forEach((name: keyof cplayer) => delete this[name]);
