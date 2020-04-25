@@ -1,91 +1,175 @@
-## 一款简单的音乐播放器
+# cPlayer
 
-[插件发布地址](https://yuanliao.info/d/1321/3)
-## 版本 1.6.0
+[![](https://badge.fury.io/js/cplayer.svg)](https://www.npmjs.com/package/cplayer) [![GitHub stars](https://img.shields.io/github/stars/MoePlayer/cPlayer.svg?style=social&label=Star&style=plastic)](https://github.com/MoePlayer/cPlayer) ![](http://img.badgesize.io/https://raw.githubusercontent.com/MoePlayer/cPlayer/master/dist/cplayer.js?compression=gzip)
 
-1. 极简模式更加贴近使用
-2. 增加指令模式总开关(关闭则开始搜索功能)需要插件完全退出后生效
-3. 在搜索列表增加添加到歌单功能
-4. 修复指令不能保存 bug
-5. 优化用户交互
+![](./previews.png)
 
-## 版本 1.5.10
+A beautiful and clean WEB Music Player by HTML5. [demo here](http://cplayer.js.org/).
 
-1. 指令自动补全
+# Feature
 
-## 版本 1.5.9
+* Lyrics display
+* Playlists
+* Three play modes, Single cycle, list loop, random play
+* Designed for touch devices
+* Modular Customizable
+* [Media Session Support](https://developers.google.com/web/updates/2017/02/media-session)
 
-1. 修复 已知 bug
-2. 修复 无效歌曲播放问题
+# Quick Start
 
-### 版本 1.5.8 更新
+``` html
+<div id="app"></div>
+<!-- 加载 cplayer 脚本 -->
+<script src=".../cplayer.js"></script>
+<script>
+  let player = new cplayer({
+    element: document.getElementById('app'),
+    playlist: [
+      {
+        src: '歌曲资源链接...',
+        poster: '封面链接...',
+        name: '歌曲名称...',
+        artist: '歌手名称...',
+        lyric: '歌词...',
+        sublyric: '副歌词，一般为翻译...',
+        album: '专辑，唱片...'
+      },
+      {
+        ...
+      },
+      ......
+    ]
+  })
+</script>
+```
 
-1. 修复网易云搜索 bug
-2. 增加指令模式(所有的指令均可以在设置中自定义)
-3. 增加极简模式(暂时没有界面)
-4. 增加歌单更新(版本 1.5.6 及以前导入歌单将无法更新)
-5. 编辑歌单名称(方便指令模式)
-6. 修复一些不友好的交互
-7. 完善收藏
+## webpack
 
-### 版本 1.5.6 更新
+```
+npm install cplayer --save
+```
 
-1. 压缩大小
-2. 修复源
-   - QQ 音乐
-   - 网易音乐
-   - 酷狗音乐
+```
+import cplayer from 'cplayer';
 
-### 版本 1.5.5 更新
+new cplayer({
+  ...
+})
+```
 
-1. 播放图标 bug 修复
+# 相关项目
 
-### 版本 1.5.4 更新
+- [hexo-tag-cplayer](https://github.com/EYHN/hexo-tag-cplayer)
+- [vue-player](https://github.com/adnasa/vue-cplayer)
+- [react-cplayer](https://github.com/Fallenhh/react-cplayer)
 
-1. 分页 bug 修复
-2. 搜索增加子输入框
+# Option
 
-### 版本 1.5.3 更新
+|OPTION|default content|description|
+|:-----|:-------------:|:----------|
+|element|`document.body`|注入播放器的目标元素。|
+|playlist|`[]`|播放列表。|
+|zoomOutKana|`false`|日语优化，缩小显示歌词中的假名。|
+|playmode|`listloop`|默认播放模式。|
+|volume|`1`|默认音量|
+|point|`0`|开始播放的歌曲索引。|
+|showPlaylist|`false`|显示播放列表，而不是当前歌曲信息。|
+|autoplay|`false`|自动播放（移动端不可用）。|
+|width|`''`|播放器宽度。|
+|size|`12px`|播放器尺寸。|
+|style|`''`|附加的css样式。|
+|shadowDom|`'true'`|启用 [shadow DOM](https://developer.mozilla.org/zh-CN/docs/Web/Web_Components/Using_shadow_DOM)。|
+|showPlaylistButton|`'true'`|显示播放列表按钮|
+|dropDownMenuMode|`'bottom'`|菜单（播放列表和歌曲信息）的显示模式， ‘bottom’ 底部、 'top' 顶部、 'none' 不显示|
 
-1. 修复 5sing 源
-2. bug 修复
+# Apis
 
-### 版本 1.5.2 更新
+- `cplayer.mode` 播放模式 目前支持3种播放模式。
+  - `listloop` 列表循环
+  - `singlecycle` 单曲循环
+  - `listrandom` 列表随机播放
+  ```
+  cplayer.mode //获取当前播放模式
 
-1. 添加音乐源
-   - 喜马拉雅
+  cplayer.mode = 'listloop' //设置当前播放模式为列表循环
+  ```
+- `cplayer.volume` 音量 0.0 ~ 1.0。
+- `cplayer.playlist` 只读 获取当前播放列表。
+- `cplayer.nowplay` 只读 获取当前正在播放的歌曲。
+- `cplayer.nowplaypoint` 只读 获取当前正在播放的歌曲在播放列表中的索引。
+- `cplayer.played` 只读 是否正在播放。
+- `cplayer.paused` 只读 是否已经暂停。
+- `cplayer.toggleMode()` 切换播放模式 按 listloop > singlecycle > listrandom 的顺序
+- `cplayer.setMode(playmode: string)` 设置播放模式与修改 `cplayer.mode` 等效。
+- `cplayer.getMode()` 获取播放模式与获取 `cplayer.mode` 等效。
+- `cplayer.play()` 开始播放
+- `cplayer.pause()` 暂停播放
+- `cplayer.to(id: number)` 跳转到指定曲目 id:歌曲的索引
+- `cplayer.next()` 下一首
+- `cplayer.prev()` 上一首
+- `cplayer.togglePlayState()` 切换播放状态，暂停 > 播放，播放 > 暂停。
+- `cplayer.add(item: IAudioItem)` 添加歌曲。
+- `cplayer.remove(item: IAudioItem)` 删除歌曲。
+- `cplayer.setVolume()` 设置音量与修改 `cplayer.volume` 等效。
+- `cplayer.destroy()` 销毁播放器。
+- `cplayer.view.getRootElement()` 获取 `<c-player />` 元素。
+- `cplayer.view.showInfo()` 关闭播放列表，显示当前歌曲信息。
+- `cplayer.view.showPlaylist()` 显示播放列表。
+- `cplayer.view.toggleDropDownMenu()` 切换播放列表，关闭 > 打开，打开 > 关闭。
+- `cplayer.setCurrentTime(duration: int)` 设置播放的时间
+- `cplayer.duration` 当前音频播放到的时间
+### Event
 
-### 版本 1.5 更新
+- `started`: 每首歌开始时触发，此时已经开始播放。
+- `ended`: 歌曲播放到末尾时触发
+- `play`: 开始播放时触发
+- `pause`: 暂停播放时触发
 
-1. 提供简单播放的功能
-2. 不提供下载功能
-3. 不保存当前播放列表
-4. 可导入 歌单
-   - QQ 音乐
-   - 网易云音乐
-5. 支持音乐源
-   - 网易云音乐
-   - QQ 音乐
-   - 酷狗音乐
-   - 酷我音乐
-   - 咪咕音乐
-   - 百度音乐
-   - 5song(会有 ip 限制)
-   - 喜马拉雅
-6. 支持备份 `注意会将本地的数据覆盖`
-7. UI 优化
+> `play 事件` 和 `pause 事件` 必定交替触发。
+> 需要注意的是上一首歌结束自动切换到下一首时不会触发 `play 事件`, 但会触发 `started 事件` 和 `openaudio 事件`。
 
-### 计划功能
+- `playmodechange`: `play 事件` 和 `pause 事件` 的结合体
+- `openaudio(item: IAudioItem)`: 打开音频时触发，但此时还不一定有音频数据。
+- `volumechange`: 音量被改变时触发
+- `timeupdate(currentTime: int, totalTime: int)`: 更新播放时间
+- `playerr(item: IAudioItem)`： 播放url错误触发(item 当前播放)
+## 常见问题
 
-1. 添加更多的源
-2. 完善剩下功能(排行榜,推荐....)
+<details><summary>如何播放网易云上的音乐？</summary><br>
 
-### ps
 
-- 随便自己写写，ui 界面后面更新会重新构建
-- 第一次写插件，代码有点乱，整理好会放到 GitHub 上
-- 还有一起完善这个插件或是有问题也可以联系我 QQ:2630316030
+### 在 `cplayer.js` 之后执行以下脚本
 
-### 下载地址
+``` javascript
+cplayer.prototype.add163 = function add163(id) {
+  if (!id) throw new Error("Unable Property.");
+  return fetch("https://music.huaji8.top/?id=" + id).then(function(res){return res.json()}).then(function(data){
+    let obj = {
+      name: data.info.songs[0].name,
+      artist: data.info.songs[0].ar.map(function(ar){ return ar.name }).join(','),
+      poster: data.pic.url,
+      lyric: data.lyric.lyric,
+      sublyric: data.lyric.tlyric,
+      src: data.url.url,
+      album: data.info.songs[0].al.name
+    }
+    this.add(obj);
+    return obj;
+  }.bind(this))
+}
+```
 
-[城通网盘](https://t00y.com/file/24866302-432465117)
+### 使用:
+
+``` javascript
+player.add163(12345678) //加入网易云id为 12345678 的歌曲
+```
+
+</details>
+
+
+<details><summary>我只需要一个封装好的 audio api，不想要 UI ？</summary><br>
+
+`dist` 文件夹中有 `cplayer-noview.js` 是去 UI 版的 cplayer。
+
+</details>
