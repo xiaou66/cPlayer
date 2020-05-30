@@ -1,3 +1,4 @@
+// @ts-ignore
 require('./polyfill')
 import { listloopPlaymode } from './playmode/listloop';
 import { IAudioItem, Iplaymode, IplaymodeConstructor, Iplaylist } from './interfaces';
@@ -36,7 +37,19 @@ const playmodes: { [key: string]: IplaymodeConstructor } = {
   singlecycle: singlecyclePlaymode,
   listrandom: listrandomPlaymode
 }
-
+// 播放歌曲时获取歌词过滤器
+function playLyricFilter(audio: IAudioItem) {
+  let res = {
+    ...audio
+  };
+  if (typeof audio.lyric === 'string' && audio.lyric.replace(/\n+/gi, "\n").trim()) {
+    res.lyric = decodeLyricStr(audio.lyric)
+  }
+  if (typeof audio.sublyric === 'string' && audio.sublyric.replace(/\n+/gi, "\n").trim()) {
+    res.sublyric = decodeLyricStr(audio.sublyric)
+  }
+  return res;
+}
 function playlistPreFilter(playlist: Iplaylist) {
   return playlist.map((audio, index) => {
     let res = {
@@ -244,6 +257,7 @@ export default class cplayer extends EventEmitter {
       this.setVolume(this.volume);
       // 播放时的播放地址
       this.emit('openaudio', audio);
+      this.playlist[this.nowplaypoint] = playLyricFilter(this.nowplay)
       this.audioElement.src = /\.[^ .]{0,4}$/.test(this.nowplay.src) ? this.nowplay.src : this.nowplay.src + '&t='+new Date().getTime()
       if (!this.__paused) {
         this.play();
@@ -368,12 +382,12 @@ if (!process.env.cplayer_noview) {
   function parseCPlayerTag() {
     Array.prototype.forEach.call(document.querySelectorAll('template[cplayer]'),(element: Element) => {
       element.attributes.getNamedItem('loaded') ||
-        new cplayer({
-          generateBeforeElement: true,
-          deleteElementAfterGenerate: true,
-          element,
-          ...JSON.parse(element.innerHTML)
-        })
+      new cplayer({
+        generateBeforeElement: true,
+        deleteElementAfterGenerate: true,
+        element,
+        ...JSON.parse(element.innerHTML)
+      })
     })
   }
 

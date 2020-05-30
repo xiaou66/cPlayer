@@ -118,6 +118,8 @@ new cplayer({
 - `cplayer.view.toggleDropDownMenu()` 切换播放列表，关闭 > 打开，打开 > 关闭。
 - `cplayer.setCurrentTime(duration: int)` 设置播放的时间
 - `cplayer.duration` 当前音频播放到的时间
+- `cplayer.nowplay.lyric.getLyric(currentTime * 1000)` 按时间获取歌词对象`{time:'',word:''}`word 是歌词
+
 ### Event
 
 - `started`: 每首歌开始时触发，此时已经开始播放。
@@ -172,4 +174,10 @@ player.add163(12345678) //加入网易云id为 12345678 的歌曲
 
 `dist` 文件夹中有 `cplayer-noview.js` 是去 UI 版的 cplayer。
 
+</details>
+<details><summary>需要歌词怎么设置?</summary><br>
+
+有两种方式
+1. 可以在一开始的构造歌曲信息的时候就可以给定
+2. 可以在`openaudio`事件中给定
 </details>
